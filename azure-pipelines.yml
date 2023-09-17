@@ -1,0 +1,60 @@
+trigger:
+- main
+
+pool:
+  name: OneTeam360
+  
+# Set variables
+variables:
+  - group: "NodeSolutionAccelerator"
+
+steps:
+
+- task: SonarQubePrepare@5
+  condition: and(succeeded(),eq(variables['TOKEN_SONARQUBE_ENABLED'], 'true'))
+  inputs:
+    SonarQube: 'SonarQube'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: 'node-backend'
+    cliSources: '.'
+
+# - task: DockerCompose@0
+#   displayName: 'Build docker images'
+#   inputs:
+#     containerregistrytype: 'Azure Container Registry'
+#     azureSubscription: '$(TOKEN_AZ_SUBSCRIPTION_NAME)'
+#     azureContainerRegistry: '{"loginServer":"$(TOKEN_ACR_NAME).azurecr.io", "id" : "/subscriptions/$(TOKEN_AZ_SUBSCRIPTION_ID)/resourceGroups/$(TOKEN_AZ_RESOURCEGROUP)/providers/Microsoft.ContainerRegistry/registries/$(TOKEN_ACR_REGISTRY_NAME)"}'
+#     dockerComposeFile: 'docker-compose.yml'
+#     projectName: 
+#     arguments: '--build-arg SONAR_HOST_URL="$(SonarQubeHostURL)" --build-arg SONAR_TOKEN="$(SonarQubeToken)"'
+#     action: 'Build services'
+#     additionalImageTags: '$(Build.BuildNumber)'
+
+# - task: DockerCompose@0
+#   displayName: 'Push docker images'
+#   inputs:
+#     containerregistrytype: 'Azure Container Registry'
+#     azureSubscription: '$(TOKEN_AZ_SUBSCRIPTION_NAME)'
+#     azureContainerRegistry: '{"loginServer":"$(TOKEN_ACR_NAME).azurecr.io", "id" : "/subscriptions/$(TOKEN_AZ_SUBSCRIPTION_ID)/resourceGroups/$(TOKEN_AZ_RESOURCEGROUP)/providers/Microsoft.ContainerRegistry/registries/$(TOKEN_ACR_REGISTRY_NAME)"}'
+#     dockerComposeFile: 'docker-compose.yml'
+#     projectName: 
+#     action: 'Push services'
+#     additionalImageTags: '$(Build.BuildNumber)'  
+    
+- powershell: |
+    $params = "$env:SONARQUBE_SCANNER_PARAMS" -replace '"sonar.branch.name":"[\w,/,-]*"\,?'
+    Write-Host "##vso[task.setvariable variable=SONARQUBE_SCANNER_PARAMS]$params"
+
+- task: SonarQubeAnalyze@5
+  condition: and(succeeded(),eq(variables['TOKEN_SONARQUBE_ENABLED'], 'true'))
+
+- task: SonarQubePublish@5
+  condition: and(succeeded(),eq(variables['TOKEN_SONARQUBE_ENABLED'], 'true'))
+  inputs:
+    pollingTimeoutSec: '300'
+
+# - task: PublishBuildArtifacts@1
+#   displayName: "Publish Artifact: drop"
+#   inputs:
+#     PathtoPublish: "docker-compose-deployment.yml"

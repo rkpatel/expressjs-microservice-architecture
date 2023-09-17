@@ -1,0 +1,18 @@
+const {
+  sendGridMail
+} = require('../../../../../CommonLibrary/api/helpers/sendGridMail.helper');
+
+module.exports = async (template, req) => {
+  const request = req.body;
+
+  const toEmails = request.recipientEmail;
+  const ccEmails = request.ccEmails ? request.ccEmails : null;
+  const subject = template.Subject;
+  let emailBody = template.Body;
+  emailBody = emailBody
+    .replace('#User_Name', request.recipientUserName)
+    .replace('#link', request.resetPasswordUrl);
+  const attachments = {};
+
+  await sendGridMail(toEmails, ccEmails, subject, emailBody, attachments);
+};

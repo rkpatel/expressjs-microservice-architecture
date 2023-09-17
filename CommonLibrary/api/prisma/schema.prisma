@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_CONNECTION_STRING")
+}
+
+model APIAudit {
+  id              BigInt    @id(map: "PK_log.APIAudit") @default(autoincrement())
+  ClientURL       String?   @db.VarChar(200)
+  UserEmail       String?   @db.VarChar(200)
+  Requestobject   String?   @db.VarChar(Max)
+  Responseobject  String?   @db.VarChar(Max)
+  Startime        DateTime? @db.DateTime
+  EndTime         DateTime? @db.DateTime
+  AuditErrorLogId String?   @db.UniqueIdentifier
+  Controller      String?   @db.VarChar(400)
+  Method          String?   @db.VarChar(400)
+}
+
+model ErrorLog {
+  ErrorLogId      Int      @id(map: "PK_ErrorLog") @default(autoincrement())
+  UserId          Int
+  Message         String   @db.VarChar(255)
+  StackTrace      String   @db.VarChar(Max)
+  IPAddress       String   @db.VarChar(50)
+  TimeStamp       DateTime @db.DateTime
+  Event           String   @db.VarChar(250)
+  UserName        String   @db.VarChar(250)
+  AuditErrorLogId String?  @db.UniqueIdentifier
+}
+
+model ModuleMaster {
+  Id            Int       @id(map: "PK__ModuleMa__3214EC072D5480CA") @default(autoincrement())
+  ParentId      Int       @default(0, map: "DF__ModuleMas__Paren__503BEA1C")
+  Name          String    @db.VarChar(100)
+  DisplayName   String    @db.VarChar(200)
+  URL           String?   @db.VarChar(200)
+  OrderNo       Int       @default(1, map: "DF__ModuleMas__Order__51300E55")
+  Description   String?   @db.VarChar(200)
+  IsActive      Boolean   @default(true, map: "DF__ModuleMas__IsAct__540C7B00")
+  CreatedDate   DateTime  @default(now(), map: "DF__ModuleMas__Creat__55009F39") @db.DateTime
+  CreatedBy     Int?
+  ModifiedDate  DateTime? @db.DateTime
+  ModifiedBy    Int?
+  IsParentMenu  Boolean?
+  MenuIconClass String?   @db.VarChar(100)
+}
+
+model ModulePermission {
+  PermissionId  Int
+  ModuleId      Int
+  IsDefaultTrue Boolean
+  IsActive      Boolean  @default(true, map: "DF__ModulePer__IsAct__5BAD9CC8")
+  CreatedDate   DateTime @default(now(), map: "DF__ModulePer__Creat__5CA1C101") @db.DateTime
+  CreatedBy     Int
+
+  @@id([PermissionId, ModuleId], map: "PK__ModulePe__8D11BC55ABBB4A6F")
+}
+
+model Notification {
+  Id                                 Int                  @id(map: "PK_Notification") @default(autoincrement())
+  NotificationTemplateId             Int
+  Sender                             String?              @db.VarChar(255)
+  Phone                              String?              @db.VarChar(12)
+  Recipient                          String?              @db.VarChar(Max)
+  CCRecipient                        String?              @db.VarChar(Max)
+  Subject                            String?              @db.NVarChar(500)
+  Body                               String               @db.NVarChar(Max)
+  NotificationType                   String               @db.VarChar(20)
+  IsProcessed                        Boolean              @default(false, map: "DF_Notification_IsProcessed")
+  ErrorMessage                       String?              @db.NVarChar(Max)
+  RetryCount                         Int?
+  SentDate                           DateTime             @db.DateTime
+  CreatedBy                          Int
+  CreatedDate                        DateTime             @db.DateTime
+  ModifiedBy                         Int?
+  ModifiedDate                       DateTime?            @db.DateTime
+  NotificationTemplate               NotificationTemplate @relation(fields: [NotificationTemplateId], references: [Id], onUpdate: NoAction, map: "FK_Notification_NotificationTemplate")
+  User_Notification_CreatedByToUser  User                 @relation("Notification_CreatedByToUser", fields: [CreatedBy], references: [Id], onUpdate: NoAction, map: "FK_Notification_User")
+  User_Notification_ModifiedByToUser User?                @relation("Notification_ModifiedByToUser", fields: [ModifiedBy], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_Notification_User1")
+}
+
+model NotificationTemplate {
+  Id                                         Int            @id(map: "PK_NotificationTemplate") @default(autoincrement())
+  Name                                       String         @db.VarChar(255)
+  Description                                String         @db.VarChar(500)
+  Subject                                    String         @db.NVarChar(500)
+  Body                                       String         @db.NVarChar(Max)
+  Type                                       String         @db.VarChar(20)
+  IsActive                                   Boolean        @default(false, map: "DF_NotificationTemplate_IsActive")
+  CreatedBy                                  Int
+  CreatedDate                                DateTime       @db.DateTime
+  ModifiedBy                                 Int?
+  ModifiedDate                               DateTime?      @db.DateTime
+  User_NotificationTemplate_CreatedByToUser  User           @relation("NotificationTemplate_CreatedByToUser", fields: [CreatedBy], references: [Id], onUpdate: NoAction, map: "FK_NotificationTemplate_User")
+  User_NotificationTemplate_ModifiedByToUser User?          @relation("NotificationTemplate_ModifiedByToUser", fields: [ModifiedBy], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_NotificationTemplate_User1")
+  Notification                               Notification[]
+}
+
+model PermissionMaster {
+  Id           Int       @id(map: "PK__Permissi__3214EC07D4FA47F0") @default(autoincrement())
+  Name         String    @db.VarChar(50)
+  DisplayName  String    @db.VarChar(200)
+  Description  String?   @db.VarChar(200)
+  IsActive     Boolean   @default(true, map: "DF__Permissio__IsAct__57DD0BE4")
+  CreatedDate  DateTime  @default(now(), map: "DF__Permissio__Creat__58D1301D") @db.DateTime
+  CreatedBy    Int
+  ModifiedDate DateTime? @db.DateTime
+  ModifiedBy   Int?
+}
+
+model RoleMaster {
+  Id           Int       @id(map: "PK__RoleDeta__3214EC0714EF5DCA") @default(autoincrement())
+  Name         String    @db.VarChar(50)
+  Description  String?   @db.VarChar(200)
+  IsActive     Boolean   @default(true, map: "DF__RoleDetai__IsAct__72FE759A")
+  CreateDate   DateTime  @default(now(), map: "DF__RoleDetai__Creat__73F299D3") @db.DateTime
+  CreatedBy    Int?
+  ModifiedDate DateTime? @db.DateTime
+  ModifiedBy   Int?
+  User         User[]
+}
+
+model RolePermission {
+  RoleId       Int
+  ModuleId     Int
+  PermissionId Int
+  Permission   Boolean  @default(true, map: "DF__RolePermi__Permi__5DCE4E8A")
+  CreatedDate  DateTime @default(now(), map: "DF__RolePermi__Creat__5EC272C3") @db.DateTime
+  CreatedBy    Int
+
+  @@id([RoleId, ModuleId, PermissionId], map: "PK_RolePermission")
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B619FC087EF") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model User {
+  Id                                                         Int                    @id(map: "PK_User") @default(autoincrement())
+  FirstName                                                  String                 @db.VarChar(50)
+  LastName                                                   String                 @db.VarChar(50)
+  EmailID                                                    String                 @db.VarChar(255)
+  UserName                                                   String?                @db.VarChar(50)
+  Password                                                   String?                @db.VarChar(255)
+  IsActive                                                   Boolean                @default(false, map: "DF_User_IsActive")
+  LastAccess                                                 DateTime?              @db.DateTime
+  CreatedBy                                                  Int
+  CreatedDate                                                DateTime               @db.DateTime
+  ModifiedBy                                                 Int?
+  ModifiedDate                                               DateTime?              @db.DateTime
+  IsVerified                                                 Boolean?               @default(false, map: "DF_User_IsVerified")
+  ActivationCode                                             String?                @db.VarChar(250)
+  PasswordResetDuration                                      DateTime?              @db.DateTime
+  RoleId                                                     Int?
+  RoleMaster                                                 RoleMaster?            @relation(fields: [RoleId], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_User_RoleMaster")
+  Notification_Notification_CreatedByToUser                  Notification[]         @relation("Notification_CreatedByToUser")
+  Notification_Notification_ModifiedByToUser                 Notification[]         @relation("Notification_ModifiedByToUser")
+  NotificationTemplate_NotificationTemplate_CreatedByToUser  NotificationTemplate[] @relation("NotificationTemplate_CreatedByToUser")
+  NotificationTemplate_NotificationTemplate_ModifiedByToUser NotificationTemplate[] @relation("NotificationTemplate_ModifiedByToUser")
+  UserResetCredential_UserToUserResetCredential_UserId       UserResetCredential[]  @relation("UserToUserResetCredential_UserId")
+  UserResetCredential_UserToUserResetCredential_CreatedBy    UserResetCredential[]  @relation("UserToUserResetCredential_CreatedBy")
+  UserResetCredential_UserToUserResetCredential_ModifiedBy   UserResetCredential[]  @relation("UserToUserResetCredential_ModifiedBy")
+}
+
+model UserResetCredential {
+  Id                                        Int       @id(map: "PK_UserResetCredential") @default(autoincrement())
+  UserId                                    Int
+  ResetCode                                 String    @db.VarChar(255)
+  IsActive                                  Boolean   @default(false, map: "DF_UserResetCredential_IsActive")
+  TimeValid                                 Int
+  EmailSentTime                             DateTime  @db.DateTime
+  CreatedBy                                 Int
+  CreatedDate                               DateTime  @db.DateTime
+  ModifiedBy                                Int?
+  ModifiedDate                              DateTime? @db.DateTime
+  User_UserToUserResetCredential_UserId     User      @relation("UserToUserResetCredential_UserId", fields: [UserId], references: [Id], onUpdate: NoAction, map: "FK_UserResetCredential_User")
+  User_UserToUserResetCredential_CreatedBy  User      @relation("UserToUserResetCredential_CreatedBy", fields: [CreatedBy], references: [Id], onUpdate: NoAction, map: "FK_UserResetCredential_User1")
+  User_UserToUserResetCredential_ModifiedBy User?     @relation("UserToUserResetCredential_ModifiedBy", fields: [ModifiedBy], references: [Id], onDelete: NoAction, onUpdate: NoAction, map: "FK_UserResetCredential_User2")
+}

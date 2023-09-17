@@ -1,0 +1,140 @@
+{
+  "root": true,
+  "env": {
+    "commonjs": true,
+    "es2022": true,
+    "node": true
+  },
+  "extends": ["airbnb-base"],
+  "globals": {
+    "Promise": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 13
+  },
+  "rules": {
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "js": "never",
+        "jsx": "never"
+      }
+    ],
+    "array-bracket-newline": ["warn", { "multiline": true }],
+    "max-len"          : [
+      "error", 
+      { "code": 130, "ignoreComments": true, "ignoreUrls": true, "ignoreStrings": true, "ignoreTemplateLiterals": true }
+    ],
+    "comma-dangle"     : ["error", "never"],
+    "arrow-parens"     : ["error", "as-needed"],
+    "block-scoped-var": ["error"],
+    "callback-return": [
+      "error",
+      ["done", "proceed", "onwards", "callback", "cb"]
+    ],
+    "comma-style": ["warn", "last"],
+    "curly": ["warn"],
+    "eqeqeq": "off",
+    "eol-last": ["warn"],
+    "handle-callback-err": ["error"],
+    "indent": [
+      "warn",
+      2,
+      {
+        "SwitchCase": 1,
+        "MemberExpression": "off",
+        "FunctionDeclaration": {
+          "body": 1,
+          "parameters": "off"
+        },
+        "FunctionExpression": {
+          "body": 1,
+          "parameters": "off"
+        },
+        "CallExpression": {
+          "arguments": "off"
+        },
+        "ArrayExpression": 1,
+        "ObjectExpression": 1,
+        "ignoredNodes": ["ConditionalExpression"]
+      }
+    ],
+    "linebreak-style": 0,
+    "no-dupe-keys": ["error"],
+    "no-duplicate-case": ["error"],
+    "no-extra-semi": ["warn"],
+    "no-labels": ["error"],
+    "no-mixed-spaces-and-tabs": [2, "smart-tabs"],
+    "no-redeclare": ["warn"],
+    "no-return-assign": ["error", "always"],
+    "no-sequences": ["error"],
+    "no-trailing-spaces": ["warn"],
+    "no-undef": ["off"],
+    "max-classes-per-file": ["off"],
+    "no-unexpected-multiline": ["warn"],
+    "no-unreachable": ["warn"],
+    "func-names": "off",
+    "no-path-concat": "off",
+    "prefer-rest-params": "off",
+    "no-unused-vars": [
+      "warn",
+      {
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^unused($|[A-Z].*$)",
+        "argsIgnorePattern": "^unused($|[A-Z].*$)",
+        "varsIgnorePattern": "^unused($|[A-Z].*$)"
+      }
+    ],
+    "no-use-before-define": [
+      "error",
+      {
+        "functions": false
+      }
+    ],
+    "one-var": ["warn", "never"],
+    "prefer-arrow-callback": [
+      "warn",
+      {
+        "allowNamedFunctions": true
+      }
+    ],
+    "quotes": [
+      "warn",
+      "single",
+      {
+        "avoidEscape": false,
+        "allowTemplateLiterals": true
+      }
+    ],
+    "semi": ["warn", "always"],
+    "semi-spacing": [
+      "warn",
+      {
+        "before": false,
+        "after": true
+      }
+    ],
+    "semi-style": ["warn", "last"],
+    "no-console": ["off"],
+    "key-spacing": [
+      "error",
+      {
+        "align": {
+          "beforeColon": true,
+          "afterColon": true,
+          "on": "colon"
+        }
+      }
+    ],
+    "import/no-extraneous-dependencies": [
+      "error", 
+      {
+        "devDependencies": false, 
+        "optionalDependencies": false, 
+        "peerDependencies": false
+      }
+    ],
+    "radix": ["off"]
+  }
+}
